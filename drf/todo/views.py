@@ -1,13 +1,13 @@
 from functools import partial
 from urllib import response
-from django.http.respose import Http404
+from django.http.response import Http404
 from django.shortcuts import render
-from rest_framework.views import APIview
+from rest_framework.views import APIView
 from .models import Todo
 from .serializers import TodoSerializer
-from rest_framework.respose import Respose
+from rest_framework.response import Response
 
-class TodoAPIView (APIview):
+class TodoAPIView (APIView):
     def get_object (self, pk):
         try:
             return Todo.objects.get(pk=pk)
@@ -20,7 +20,7 @@ class TodoAPIView (APIview):
         else:
             data = Todo.objects.all()
             serializer = TodoSerializer(data, many=True)
-            return Respose(serializer.data)
+            return Response(serializer.data)
     def post (self, request, format=None):
         data = request.data
         serializer = TodoSerializer(data=data)
@@ -34,7 +34,7 @@ class TodoAPIView (APIview):
         return response
     def put(self, request, pk = None, format = None):
         todo_to_update = Todo.objects.get(pk=pk)
-        serializer = TodoSerializer(instance=todo_update, data= request.data, partial=True)
+        serializer = TodoSerializer(instance=todo_to_update, data= request.data, partial=True)
         serializer.is_valid(raise_exception=True)
         serializer.save()
         response.data = {
@@ -45,6 +45,6 @@ class TodoAPIView (APIview):
     def delete(self, request, pk, format=None):
         todo_to_delete = Todo.objects.get(pk=pk)
         todo_to_delete.delete()
-        return Respose({
+        return Response({
             'message': 'Todo Deleted successfully'
         })
